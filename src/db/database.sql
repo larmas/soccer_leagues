@@ -1,11 +1,14 @@
-CREATE DATABASE IF NOT EXISTS soccer_leagues_db;
+CREATE DATABASE IF NOT EXISTS soccer_leagues_db
+    CHARACTER SET utf8mb4 
+    COLLATE utf8mb4_unicode_ci;
 USE soccer_leagues_db;
 
 CREATE TABLE IF NOT EXISTS competition(
- code INTEGER NOT NULL,
- name VARCHAR(50),
- areaName VARCHAR(50),
- PRIMARY KEY(code)
+    id INTEGER NOT NULL,
+    code VARCHAR(3),
+    name VARCHAR(50),
+    areaName VARCHAR(50),
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS team(
@@ -31,8 +34,8 @@ CREATE TABLE IF NOT EXISTS player(
 );
 
 CREATE TABLE IF NOT EXISTS teamCompetition(
-    id INTEGER NOT NULL,
-    code INTEGER NOT NULL,
-    CONSTRAINT teamFK FOREIGN KEY teamFK(id) REFERENCES team(id) ON DELETE CASCADE,
-    CONSTRAINT competitionFK FOREIGN KEY competitionFK(code) REFERENCES competition(code) ON DELETE CASCADE
+    teamId INTEGER NOT NULL,
+    competitionId INTEGER NOT NULL,
+    CONSTRAINT teamFK FOREIGN KEY teamFK(teamId) REFERENCES team(id) ON DELETE CASCADE,
+    CONSTRAINT competitionFK FOREIGN KEY competitionFK(competitionId) REFERENCES competition(id) ON DELETE CASCADE
 );

@@ -21,7 +21,7 @@ class Database {
         });
     };
 
-    function executeQuery(query, values) {
+    executeQuery(query, values) {
         return new Promise((resolve, reject) => {
             this.connection.query(query, values, (err, rows) => {
                 if (err) 
@@ -31,7 +31,7 @@ class Database {
         });
     }
 
-    function endConnection(){
+    endConnection(){
         return new Promise((resolve, reject) => {
             this.connection.end( err => {
                 if (err)
