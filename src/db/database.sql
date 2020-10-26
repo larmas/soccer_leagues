@@ -28,14 +28,19 @@ CREATE TABLE IF NOT EXISTS player(
     nationality VARCHAR(50),
     countryOfBirth VARCHAR(50),
     dateOfBirth DATE,
-    idTeam INTEGER,
-    PRIMARY KEY(id),
-    CONSTRAINT teamPlayerFK FOREIGN KEY teamPlayerFK(idTeam) REFERENCES team(id) ON DELETE CASCADE
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS teamCompetition(
     teamId INTEGER NOT NULL,
     competitionId INTEGER NOT NULL,
-    CONSTRAINT teamFK FOREIGN KEY teamFK(teamId) REFERENCES team(id) ON DELETE CASCADE,
-    CONSTRAINT competitionFK FOREIGN KEY competitionFK(competitionId) REFERENCES competition(id) ON DELETE CASCADE
+    CONSTRAINT team_teamCompetition_FK FOREIGN KEY team_teamCompetition_FK(teamId) REFERENCES team(id) ON DELETE CASCADE,
+    CONSTRAINT competition_teamCompetition_FK FOREIGN KEY competition_teamCompetition_FK(competitionId) REFERENCES competition(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS playerTeam(
+    playerId INTEGER NOT NULL,
+    teamId INTEGER NOT NULL,
+    CONSTRAINT player_playerTeam_FK FOREIGN KEY player_playerTeam_FK(playerId) REFERENCES player(id) ON DELETE CASCADE,
+    CONSTRAINT team_playerTeam_FK FOREIGN KEY team_playerTeam_FK(teamId) REFERENCES team(id) ON DELETE CASCADE
 );
