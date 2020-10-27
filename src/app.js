@@ -135,30 +135,37 @@ axios.interceptors.response.use(null,(err) => {
 })
 
 app.get('/import-league/:codeLeague', (req, res) => {
-    getRequest('/v2/competitions/'+req.params.codeLeague, apiFootball)
-        .then((resp) => {
-            // Insertar liga en db
-            return addCompetition(resp.data);
-        })
-        .then((resp) => {
-            // Obtener equipos de la competicion
-            return getRequest('/v2/competitions/'+ req.params.codeLeague + '/teams', apiFootball);
-        })
-        .then((resp) => {
-            // Insertar equipos en db
-            return mapInsert(resp.data.teams, addTeam, resp.data.competition.id);
-        })
-        .then(() => {
-            res.status(201).json({message: 'Successfully imported'});
-        })
-        .catch((err) => {
-            if (err.response)
-                res.status(404).json({message: 'Not found'});
-            else if (err.code == 409)
-                res.status(409).json({message: err.message});
-            else
-                res.status(504).json({message: 'Server error'});
-        })
+    codeLeague = req.params.codeLeague;
+    expressionCode = /^[A-Z]+[A-Z,0-9]$/;
+    if (codeLeague.match(expressionCode)){
+        getRequest('/v2/competitions/'+req.params.codeLeague, apiFootball)
+            .then((resp) => {
+                // Insertar liga en db
+                return addCompetition(resp.data);
+            })
+            .then((resp) => {
+                // Obtener equipos de la competicion
+                return getRequest('/v2/competitions/'+ req.params.codeLeague + '/teams', apiFootball);
+            })
+            .then((resp) => {
+                // Insertar equipos en db
+                return mapInsert(resp.data.teams, addTeam, resp.data.competition.id);
+            })
+            .then(() => {
+                res.status(201).json({message: 'Successfully imported'});
+            })
+            .catch((err) => {
+                if (err.response)
+                    res.status(404).json({message: 'Not found'});
+                else if (err.code == 409)
+                    res.status(409).json({message: err.message});
+                else
+                    res.status(504).json({message: 'Server error'});
+            })
+    } else {
+        res.status(400).json({message: 'Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ '})
+        throw new Error('Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ ');
+    }
 });
 
 app.get('/total-players/:codeLeague', (req, res) => {
