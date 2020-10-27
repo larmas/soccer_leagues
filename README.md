@@ -27,3 +27,14 @@ where N is the total amount of players belonging to all teams that participate i
 &nbsp;&nbsp;&nbsp;&nbsp;○	 HttpCode 504, {"message": "Server Error" } --> If there is any connectivity issue either with the football API or the DB server.<br />
  
 ●	It might happen that when a given leagueCode is being imported, the league has participant teams that are already imported (because each team might belong to one or more leagues). For these cases, it must add the relationship between the league and the team(s) (and omit the process of the preexistent teams and their players).<br />
+
+# REQUIREMENTS #
+
+You must have NodeJs and Mysql installed.
+
+# USAGE #
+
+At the root of the project, execute the command:<br /> 
+**npm i && npm start**<br />
+<br />
+Your application should be running on: '**http://localhost:8080**'
