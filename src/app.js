@@ -22,6 +22,7 @@ const getRequest = (uri, apiInfo) => {
 
 function addCompetition(competition){
     database = new Database;
+    console.log(chalk.green.bold('Adding league: '+ competition.name));
     return database.executeQuery(`SELECT * FROM competition WHERE id=?`, competition.id)
         .then((queryResult) => {
             if (queryResult == ''){
@@ -48,6 +49,7 @@ function addTeam(team, competition){
     var alreadyExists;
     return new Promise((resolve, reject) => {
     database = new Database;
+    console.log(chalk.green.bold('Adding team: '+ team.name));
     getRequest('/v2/teams/'+team.id, apiFootball)
         .then((resp) => {
             team = resp.data;
@@ -94,6 +96,7 @@ function addTeam(team, competition){
 function addPlayer(player, team){
     return new Promise((resolve, reject) => {
         database = new Database;
+        console.log(chalk.green.bold('Adding player: '+player.name));
         database.executeQuery(`SELECT * FROM player WHERE id=?`, [player.id])
         .then((queryResult) => {
             if (queryResult == ''){
@@ -125,8 +128,9 @@ function addPlayer(player, team){
 }
 
 axios.interceptors.response.use(null,(err) => {
-    if (err.response.status == 429)
+    if (err.response.status == 429){
         return axios.request(err.config);
+    }
     return Promise.reject(err);
 })
 
@@ -154,6 +158,30 @@ app.get('/import-league/:codeLeague', (req, res) => {
                 res.status(409).json({message: err.message});
             else
                 res.status(504).json({message: 'Server error'});
+        })
+});
+
+app.get('/total-players/:codeLeague', (req, res) => {
+    database = new Database;
+    codeLeague = req.params.codeLeague;
+    expressionCode = /^[A-Z]+[A-Z,0-9]$/;
+    var query;
+    if(codeLeague.match(expressionCode)){
+        query = 'SELECT COUNT(playerId) AS cantPlayers FROM (SELECT teamId,code FROM competition, teamCompetition WHERE competition.id = teamCompetition.competitionId) competitionTeam NATURAL JOIN playerTeam WHERE code=?';
+    }else{
+        res.status(400).json({message: 'Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ '})
+        throw new Error('Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ ');
+    }
+    database.executeQuery(query,codeLeague)
+        .then(([queryResult]) => {
+            if (queryResult.cantPlayers == 0){
+                return Promise.reject();
+            }
+            res.status(200).json({total: queryResult.cantPlayers});
+            database.endConnection();
+        })
+        .catch((err) => {
+            res.status(404).json({message: 'Not found'})
         })
 });
 
