@@ -23,7 +23,7 @@ const apiFootball = {
  * Send a get request through via axios(HTTP client).
  * @param uri Request destination.
  * @param apiInfo Data to make the request.
- * @return {Promise} Promise with API response.
+ * @return {Promise} 
  */
 const getRequest = (uri, apiInfo) => {
     apiInfo.url = apiInfo.host + uri;
@@ -33,7 +33,7 @@ const getRequest = (uri, apiInfo) => {
 /**
  * Add a competition to the databse if it doesn't exists.
  * @param competition Competition data.
- * @return {Promise} Promise with query result.
+ * @return {Promise} 
  */
 function addCompetition(competition){
     database = new Database;
@@ -60,7 +60,7 @@ function addCompetition(competition){
  * @param array Array of items
  * @param f Function that takes an array item and an integer and returns a promise.
  * @param id Identifier for a team or player.
- * @return {Promise}
+ * @return {Promise} 
  */
 function mapInsert(array, f, int){
     return array.reduce((promise, item) => {
@@ -114,7 +114,7 @@ function addTeam(team, competition){
             .then(() => {
                 database.endConnection();
                 if(!alreadyExists){
-                    // Get team players.
+                    // Get only team players.
                     players = team.squad.filter((player) => {
                         return player.role == 'PLAYER';
                     });
