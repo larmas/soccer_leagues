@@ -1,14 +1,15 @@
 const mysql = require('mysql');
 const fs = require('fs');
 const chalk = require('chalk');
+require('dotenv').config();
 
 /**
  * Database configurations.
  */
 const db_config = {
-    host : 'localhost',
-    user : 'root',
-    password : 'root',
+    host : process.env.DB_HOST,
+    user : process.env.DB_USER,
+    password : process.env.DB_PASSWORD,
     multipleStatements : true,
 };
 

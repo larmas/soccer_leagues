@@ -5,7 +5,10 @@ const Database = require('./db/database');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 
+require('dotenv').config();
+
 app.use(bodyParser.json());
+app.set('port', process.env.PORT || 8080);
 
 /**
  * Data for the connection with de Football-data API.
@@ -15,7 +18,7 @@ const apiFootball = {
     path : '',
     method : 'get',
     headers : {
-        'X-Auth-Token' : '43536e2a56ca4a64aaf34ed57ba1c2fb'
+        'X-Auth-Token' : process.env.API_KEY
     }
 };
 
@@ -207,7 +210,7 @@ app.get('/import-league/:codeLeague', (req, res) => {
     codeLeague = req.params.codeLeague;
     expressionCode = /^[A-Z]+[A-Z,0-9]$/;
     if (codeLeague.match(expressionCode)){
-        getRequest('/v2/competitions/'+req.params.codeLeague, apiFootball)
+        getRequest('/v2/competitions/'+codeLeague, apiFootball)
             .then((resp) => {
                 // Insert competition into database.
                 return addCompetition(resp.data);
@@ -276,6 +279,6 @@ app.get('/total-players/:codeLeague', (req, res) => {
 /**
  * Set server port.
  */
-app.listen(8080, () => {
-    console.log(chalk.bgCyan.bold('Server listen on port 8080: \'Ctrl\' + \'C\' to stop.'));
+app.listen(app.get('port'), () => {
+    console.log(chalk.bgCyan.bold(`Server listen on port ${app.get('port')}: \'Ctrl\' + \'C\' to stop.`));
 });
