@@ -3,11 +3,9 @@ const app = express();
 const chalk = require('chalk');
 const Database = require('./db/database');
 const axios = require('axios');
-const bodyParser = require('body-parser');
 
 require('dotenv').config();
 
-app.use(bodyParser.json());
 app.set('port', process.env.PORT || 8080);
 
 /**
@@ -256,24 +254,27 @@ app.get('/total-players/:codeLeague', (req, res) => {
     database = new Database;
     codeLeague = req.params.codeLeague;
     expressionCode = /^[A-Z]+([A-Z]+$|[0-9]+$)/;
-    var query;
-    if(codeLeague.match(expressionCode)){
-        query = 'SELECT COUNT(playerId) AS cantPlayers FROM (SELECT teamId,code FROM competition, teamCompetition WHERE competition.id = teamCompetition.competitionId) competitionTeam NATURAL JOIN playerTeam WHERE code=?';
-    }else{
-        res.status(400).json({message: 'Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ '})
-        throw new Error('Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ ');
-    }
-    database.executeQuery(query,codeLeague)
-        .then(([queryResult]) => {
-            if (queryResult.cantPlayers == 0){
+    var query = 'SELECT COUNT(playerId) AS cantPlayers FROM (SELECT teamId,code FROM competition, teamCompetition WHERE competition.id = teamCompetition.competitionId) competitionTeam NATURAL JOIN playerTeam WHERE code=?';
+    if (codeLeague.match(expressionCode)){
+        database.executeQuery(`SELECT * FROM competition WHERE code=?`, codeLeague)
+        .then((resp) => {
+            if ( resp == '')
                 return Promise.reject();
-            }
+            return database.executeQuery(query, codeLeague)
+        })
+        .then(([queryResult]) => {
             res.status(200).json({total: queryResult.cantPlayers});
             database.endConnection();
         })
         .catch((err) => {
             res.status(404).json({message: 'Not found'})
         })
+    } else {
+        res.status(400).json({message: 'Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ '})
+        throw new Error('Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ '); 
+    }
+        
+        
 });
 
 /**
