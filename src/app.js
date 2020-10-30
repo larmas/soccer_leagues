@@ -208,7 +208,7 @@ axios.interceptors.response.use(null,(err) => {
  */
 app.get('/import-league/:codeLeague', (req, res) => {
     codeLeague = req.params.codeLeague;
-    expressionCode = /^[A-Z]+[A-Z,0-9]$/;
+    expressionCode = /^[A-Z]+([A-Z]+$|[0-9]+$)/;
     if (codeLeague.match(expressionCode)){
         getRequest('/v2/competitions/'+codeLeague, apiFootball)
             .then((resp) => {
@@ -255,7 +255,7 @@ app.get('/import-league/:codeLeague', (req, res) => {
 app.get('/total-players/:codeLeague', (req, res) => {
     database = new Database;
     codeLeague = req.params.codeLeague;
-    expressionCode = /^[A-Z]+[A-Z,0-9]$/;
+    expressionCode = /^[A-Z]+([A-Z]+$|[0-9]+$)/;
     var query;
     if(codeLeague.match(expressionCode)){
         query = 'SELECT COUNT(playerId) AS cantPlayers FROM (SELECT teamId,code FROM competition, teamCompetition WHERE competition.id = teamCompetition.competitionId) competitionTeam NATURAL JOIN playerTeam WHERE code=?';
