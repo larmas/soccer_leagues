@@ -3,9 +3,11 @@ const app = express();
 const chalk = require('chalk');
 const Database = require('./db/database');
 const axios = require('axios');
+var morgan = require('morgan');
 
 require('dotenv').config();
 
+app.use(morgan('dev'));
 app.set('port', process.env.PORT || 8080);
 
 /**
@@ -235,8 +237,8 @@ app.get('/import-league/:codeLeague', (req, res) => {
             })
     } else {
         // Wrong league code format
-        res.status(400).json({message: 'Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ '})
-        throw new Error('Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ ');
+        res.status(400).json({message: 'Wrong league code format. Regular expression of the correct format: /^[A-Z]+([A-Z]+$|[0-9]+$)/ '})
+        throw new Error('Wrong league code format. Regular expression of the correct format: /^[A-Z]+([A-Z]+$|[0-9]+$)/ ');
     }
 });
 
@@ -270,8 +272,8 @@ app.get('/total-players/:codeLeague', (req, res) => {
             res.status(404).json({message: 'Not found'})
         })
     } else {
-        res.status(400).json({message: 'Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ '})
-        throw new Error('Wrong league code format. Regular expression of the correct format: /^[A-Z]+[A-Z,0-9]$/ '); 
+        res.status(400).json({message: 'Wrong league code format. Regular expression of the correct format: /^[A-Z]+([A-Z]+$|[0-9]+$)/ '})
+        throw new Error('Wrong league code format. Regular expression of the correct format: /^[A-Z]+([A-Z]+$|[0-9]+$)/ '); 
     }
         
         

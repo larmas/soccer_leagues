@@ -1,15 +1,16 @@
 const mysql = require('mysql');
-const fs = require('fs');
 const chalk = require('chalk');
-require('dotenv').config();
+
+//require('dotenv').config();
 
 /**
  * Database configurations.
  */
 const db_config = {
-    host : process.env.DB_HOST,
-    user : process.env.DB_USER,
-    password : process.env.DB_PASSWORD,
+    host : process.env.MYSQL_HOST,
+    user : process.env.MYSQL_USER,
+    password : process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
     multipleStatements : true,
 };
 
@@ -20,13 +21,13 @@ class Database {
      */
     constructor(){
         this.connection = mysql.createConnection(db_config);
-        const database = fs.readFileSync('./src/db/database.sql').toString();
+        /*const database = fs.readFileSync('./src/db/database.sql').toString();
         this.connection.query(database, (err, result) => {
             if (err) 
                 throw err;
             else
                 console.log(chalk.blue.bold('Database connection successfull'));
-        });
+        });*/
     };
 
     /**
@@ -38,8 +39,10 @@ class Database {
     executeQuery(query, values) {
         return new Promise((resolve, reject) => {
             this.connection.query(query, values, (err, rows) => {
-                if (err) 
+                if (err) {
+                    console.log(err);
                     return reject(err);
+                }
                 resolve(rows);
             });
         });
